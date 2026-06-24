@@ -1,0 +1,59 @@
+<!-- BCEagent iframe responsive para WordPress -->
+<div class="bceagent-embed">
+  <iframe
+    id="bceagent-frame"
+    src="https://TU-URL-DE-RENDER.onrender.com"
+    title="BCEagent — Brand Commerce Everywhere"
+    loading="lazy"
+    referrerpolicy="no-referrer-when-downgrade"
+    allow="clipboard-write; fullscreen">
+  </iframe>
+</div>
+
+<style>
+  .bceagent-embed{
+    max-width:900px;
+    margin:0 auto;
+    padding:12px;
+  }
+  .bceagent-embed iframe{
+    width:100%;
+    height:75vh;
+    min-height:620px;
+    border:0;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 10px 30px rgba(15,23,42,.12);
+  }
+  @media (max-width:767px){
+    .bceagent-embed{padding:0;}
+    .bceagent-embed iframe{
+      height:82vh;
+      min-height:620px;
+      border-radius:0;
+    }
+  }
+</style>
+
+<!-- Bloque externo al iframe donde vosotros insertáis HubSpot Meetings -->
+<div id="reservar-cita" style="margin-top:40px;">
+  <!-- Aquí va el embed de HubSpot Meetings -->
+</div>
+
+<script>
+window.addEventListener("message", function(event) {
+  if (event.data?.type === "bceagent:scrollToBooking") {
+    document.querySelector("#reservar-cita")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
+
+  if (event.data?.type === "bceagent:height") {
+    const iframe = document.querySelector("#bceagent-frame");
+    if (iframe && event.data.h) {
+      iframe.style.height = Math.max(620, Math.min(event.data.h + 20, 1200)) + "px";
+    }
+  }
+});
+</script>
