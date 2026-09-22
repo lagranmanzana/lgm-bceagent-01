@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BCEagent — Data Agent</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:#0f172a;background:#fff}
+.wrap{height:100vh;padding:20px}.card{height:100%;max-width:760px;margin:auto;border:1px solid #e2e8f0;border-radius:18px;overflow:hidden;display:flex;flex-direction:column;background:#fff}
+header{padding:17px 20px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;gap:12px}.dot{width:10px;height:10px;border-radius:50%;background:#38c3d8;box-shadow:0 0 0 rgba(56,195,216,.35);animation:pulse 1.7s infinite}@keyframes pulse{70%{box-shadow:0 0 0 9px rgba(56,195,216,0)}}h1{font-size:15px;margin:0;font-weight:750}header p{font-size:13px;color:#64748b;margin:2px 0 0}.chat{flex:1;padding:18px;overflow:auto;display:flex;flex-direction:column;gap:12px}.msg{max-width:82%;padding:13px 15px;border-radius:14px;line-height:1.5;white-space:pre-wrap}.bot{align-self:flex-start;background:#f8fafc;border:1px solid #dbe2ea;border-bottom-left-radius:4px}.user{align-self:flex-end;background:#dff2ff;border-bottom-right-radius:4px}form{padding:12px;border-top:1px solid #e5e7eb;display:flex;gap:9px;background:#fff}input{flex:1;border:1px solid #cbd5e1;border-radius:12px;padding:12px 14px;font:inherit;outline:none}input:focus{border-color:#38c3d8;box-shadow:0 0 0 3px rgba(56,195,216,.12)}button{border:0;border-radius:12px;padding:0 18px;background:#0f172a;color:#fff;font-weight:700;cursor:pointer}button:disabled{opacity:.5}@media(max-width:600px){.wrap{padding:0}.card{border:0;border-radius:0}.msg{max-width:88%}}
+</style>
+</head>
+<body><div class="wrap"><div class="card">
+<header><span class="dot"></span><div><h1>BCEagent — Data Agent</h1><p>Tu agente inteligente de datos</p></div></header>
+<div id="chat" class="chat"><div class="msg bot">Hola 👋 Soy BCEagent, tu agente de datos. Estoy aquí para ayudarte a responder cualquier pregunta sobre tus datos. ¿Qué quieres analizar?</div></div>
+<form id="form"><input id="prompt" autocomplete="off" placeholder="Pregunta sobre tus datos…"><button id="send">Enviar</button></form>
+</div></div>
+<script>
+const chat=document.getElementById("chat"),form=document.getElementById("form"),input=document.getElementById("prompt"),send=document.getElementById("send");
+const sid=localStorage.getItem("bce_sid")||("bce_"+Date.now()+"_"+Math.random().toString(36).slice(2));localStorage.setItem("bce_sid",sid);
+let transcript="",count=0;
+function bubble(t,w){const d=document.createElement("div");d.className="msg "+w;d.textContent=t;chat.appendChild(d);chat.scrollTop=chat.scrollHeight}
+form.addEventListener("submit",async e=>{e.preventDefault();const p=input.value.trim();if(!p)return;bubble(p,"user");input.value="";input.disabled=send.disabled=true;count++;
+try{const r=await fetch("/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({session_id:sid,prompt:p,transcript,user_message_count:count,source_url:document.referrer||location.href})});const d=await r.json();const reply=d.reply||"No he podido responder ahora.";bubble(reply,"bot");transcript+=(transcript?"\n":"")+"Usuario: "+p+"\nBCEagent: "+reply}
+catch(e){bubble("Ha habido un problema al consultar los datos. Inténtalo de nuevo.","bot")}
+finally{input.disabled=send.disabled=false;input.focus()}});
+</script></body></html>
