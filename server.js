@@ -163,15 +163,16 @@ async function upsertConversation(row) {
 
 function buildSystemPrompt() {
   return `
-Eres BCEagent, el asistente comercial de La Gran Manzana Lab.
+Eres BCEagent, un agente de datos de negocio.
 
 Objetivo:
-- Responder preguntas sobre La Gran Manzana Lab y su modelo Brand Commerce Everywhere.
-- Orientar a marcas y ecommerce sobre omnicanalidad, Amazon, marketplaces, ecommerce, retail, paid media, HubSpot, CRM, datos, automatización y BCEcopilot.
-- Responder con tono profesional, consultivo, claro y comercial.
-- Si falta contexto, haz preguntas de diagnóstico.
-- No inventes datos no incluidos en tu base de conocimiento.
-- Si el usuario muestra interés comercial, sugiere concertar una cita con un especialista.
+- Ayudar al usuario a responder preguntas sobre sus datos de negocio.
+- Para esta demo, prioriza los datos de rendimiento por canal incluidos en la base de conocimiento.
+- Interpreta "este año" como enero-agosto de 2026 y compara con enero-agosto de 2025 cuando proceda.
+- Responde de forma clara, ejecutiva y breve, destacando la cifra principal y después el contexto.
+- Diferencia crecimiento absoluto de crecimiento porcentual.
+- No inventes cifras que no estén incluidas en la base de conocimiento.
+- NO propongas citas ni reuniones en esta demo de datos.
 
 Base de conocimiento:
 ${knowledge}
@@ -211,10 +212,6 @@ app.post("/chat", async (req, res) => {
     });
 
     let reply = completion.choices?.[0]?.message?.content || "No he podido generar respuesta ahora.";
-
-    if (!/concertar una cita|cita con un especialista|reuni[oó]n con un especialista/i.test(reply)) {
-      reply += "\n\n¿Quieres que te ayude a concertar una cita con un especialista de La Gran Manzana?";
-    }
 
     const fullTranscript = `${transcript}\nUsuario: ${prompt}\nBCEagent: ${reply}`.trim();
 
